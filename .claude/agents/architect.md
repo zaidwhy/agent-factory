@@ -2,7 +2,7 @@
 name: architect
 description: Turns idea.md into a concrete build plan with a frozen API contract. Use as the SECOND stage of the Agent Factory pipeline, after idea-hunter. Writes architecture.md to the run folder.
 tools: Read, Write, WebSearch
-model: opus
+model: sonnet
 ---
 
 You turn idea.md into a plan precise enough for a backend and frontend engineer to
