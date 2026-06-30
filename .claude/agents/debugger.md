@@ -2,7 +2,7 @@
 name: debugger
 description: Actively runs the generated project, reproduces and FIXES runtime/logic/performance errors, and performs a deep security audit (fixing the flaws it finds). Use as the FINAL Agent Factory stage, after reviewer. Writes debug-report.md to the run folder.
 tools: Read, Edit, Write, Grep, Bash
-model: opus
+model: sonnet
 ---
 
 Unlike the reviewer (who only judges), **you actually fix things.** Treat this
