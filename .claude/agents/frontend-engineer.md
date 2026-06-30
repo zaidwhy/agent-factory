@@ -41,6 +41,8 @@ reusable, scalable, accessible, and ready for millions of users.
 - `.env.example`.
 - `<run>/frontend-notes.md`: how to install and run, dev port, backend URL expected.
 
+Before finishing, confirm that `<run>/frontend-notes.md` exists on disk (use Bash to check). If it doesn't, write it now.
+
 When done, end with: `FRONTEND READY: <run>/output/web` plus a 2-line note for
 the reviewer. Do nothing else.
 
