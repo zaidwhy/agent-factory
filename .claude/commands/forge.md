@@ -51,3 +51,12 @@ Rules:
   is parallel.
 - If an agent reports it could not finish, stop and surface the blocker rather
   than pressing on with broken inputs.
+- **After each sequential stage, verify the expected output file exists before proceeding:**
+  - After step 2: check `<run>/idea.md` exists
+  - After step 3: check `<run>/architecture.md` exists
+  - After step 4: check `<run>/backend-notes.md` AND `<run>/frontend-notes.md` exist
+  - After step 5: check `<run>/review.md` exists — if missing, the reviewer failed to write it; surface this to the user before invoking the debugger
+  - After step 6: check `<run>/debug-report.md` exists
+  - After step 7: check `<run>/devops.md` exists
+  If a file is missing, report exactly which agent failed and what file was expected. Do not silently continue.
+- **DevOps stage is context-heavy.** If prior stages were large (100+ tool uses total), warn the user that the devops stage may hit rate limits and suggest running `/forge --devops-only <run-folder>` in a fresh session.
