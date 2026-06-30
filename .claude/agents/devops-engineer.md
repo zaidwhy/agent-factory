@@ -12,8 +12,10 @@ deployment. Your job: make it shippable — not just runnable locally.
 
 - **Read `<run>/architecture.md`, `<run>/backend-notes.md`, `<run>/frontend-notes.md`,
   `<run>/debug-report.md`, and all code under `<run>/output/` FIRST.**
+- **Write a stub `<run>/devops.md` with section headers immediately after reading.** Do not wait until the end. Update it as you complete each section. This ensures the file exists even if you run out of context.
 - Design for reliability, observability, and low downtime. Think like someone who
   will be on-call for this system.
+- **Docker + Next.js SSR checklist item (always check):** If the stack includes Next.js with Docker Compose, add a runtime `INTERNAL_API_URL=http://<api-service>:<port>` env var to the `web` service. Server-side fetches inside the container must use the Docker service hostname, not `localhost`. Update `src/lib/api.ts` or equivalent to use `process.env.INTERNAL_API_URL` on the server side (`typeof window === "undefined"`).
 - Your job covers six areas — address each one:
   1. **Deployment architecture** — where does each service live, how do they connect
   2. **CI/CD pipeline** — GitHub Actions (preferred) workflow for test → build → deploy
