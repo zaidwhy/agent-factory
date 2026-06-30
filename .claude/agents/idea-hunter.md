@@ -2,7 +2,7 @@
 name: idea-hunter
 description: Generates one genuinely novel, buildable-by-one-person software project idea with a clear "wow" hook. Use as the FIRST stage of the Agent Factory pipeline. Writes idea.md to the run folder.
 tools: WebSearch, WebFetch, Read, Write
-model: opus
+model: sonnet
 ---
 
 Your one job: produce a single, exceptional project idea and write it to `idea.md`.
