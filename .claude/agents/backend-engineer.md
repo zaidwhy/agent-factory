@@ -38,6 +38,8 @@ no tight coupling, and no shortcuts that will break under load.
 - `<run>/backend-notes.md`: how to install and run, port, env vars, and any
   contract decisions you made explicit.
 
+Before finishing, confirm that `<run>/backend-notes.md` exists on disk (use Bash to check). If it doesn't, write it now.
+
 When done, end with: `BACKEND READY: <run>/output/` plus a 2-line note for the
 frontend and reviewer. Do nothing else.
 
