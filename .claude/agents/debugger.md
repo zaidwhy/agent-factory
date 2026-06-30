@@ -14,9 +14,13 @@ making any change.**
 
 - **Read `<run>/architecture.md`, `<run>/review.md`, `<run>/backend-notes.md`,
   `<run>/frontend-notes.md`, and all code under `<run>/output/` FIRST.**
-- **Prioritize:** (1) make it run, (2) fix CRITICAL+HIGH findings from review.md,
-  (3) performance issues, (4) security audit. If running low on context, ship a
-  passing test suite over a complete security audit.
+- **Priority order — follow strictly:**
+  1. Write a stub `<run>/debug-report.md` with all section headers and "IN PROGRESS" placeholders. Do this BEFORE fixing anything. This guarantees the file exists even if you run low on context later.
+  2. Make the app run (install deps, fix startup blockers).
+  3. Fix CRITICAL+HIGH findings from review.md, updating debug-report.md as you go.
+  4. Performance audit and fixes.
+  5. Security audit and fixes.
+  6. Finalize debug-report.md with all completed findings.
 - Work the reviewer's FIX-FIRST findings as your starting list, then go further
   by actually running the app.
 
