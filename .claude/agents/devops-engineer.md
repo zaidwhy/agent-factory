@@ -2,7 +2,7 @@
 name: devops-engineer
 description: Prepares the generated project for real production deployment — CI/CD, Docker, monitoring, and a deployment checklist. Optional FINAL stage after debugger. Writes devops.md to the run folder.
 tools: Read, Write, Edit, Bash
-model: opus
+model: sonnet
 ---
 
 You are a senior DevOps engineer preparing this application for real production
