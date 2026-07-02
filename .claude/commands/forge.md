@@ -1,5 +1,5 @@
 ---
-description: Run the full Agent Factory pipeline — idea → plan → build → review → debug → (optional) devops — producing a runnable project under runs/.
+description: Run the full Agent Factory pipeline - idea → plan → build → review → debug → (optional) devops - producing a runnable project under runs/.
 argument-hint: [optional theme, e.g. "developer tools"] [--devops to add deployment stage]
 ---
 
@@ -9,7 +9,7 @@ work between the specialist subagents via files. The optional theme is: `$ARGUME
 Execute these steps in order. Pass the run folder path to every agent.
 
 1. **Create the run folder.** Make `runs/<YYYY-MM-DD_HHMM>/`. Tell the user the
-   path. This folder is the shared workspace — every agent reads inputs and writes
+   path. This folder is the shared workspace - every agent reads inputs and writes
    outputs here.
 
 2. **Idea.** Invoke `idea-hunter` with the run folder and theme. Wait for `idea.md`.
@@ -19,7 +19,7 @@ Execute these steps in order. Pass the run folder path to every agent.
    any weak decisions, and writes `architecture.md` (with frozen API contract, stack
    pins, scalability notes, and tradeoff analysis). Wait for it.
 
-4. **Build (parallel).** The API contract is frozen — launch both engineers at once
+4. **Build (parallel).** The API contract is frozen - launch both engineers at once
    (a single message with two Agent calls):
    - `backend-engineer` → builds `output/`, writes `backend-notes.md`
    - `frontend-engineer` → builds `output/`, writes `frontend-notes.md`
@@ -55,7 +55,7 @@ Rules:
   - After step 2: check `<run>/idea.md` exists
   - After step 3: check `<run>/architecture.md` exists
   - After step 4: check `<run>/backend-notes.md` AND `<run>/frontend-notes.md` exist
-  - After step 5: check `<run>/review.md` exists — if missing, the reviewer failed to write it; surface this to the user before invoking the debugger
+  - After step 5: check `<run>/review.md` exists - if missing, the reviewer failed to write it; surface this to the user before invoking the debugger
   - After step 6: check `<run>/debug-report.md` exists
   - After step 7: check `<run>/devops.md` exists
   If a file is missing, report exactly which agent failed and what file was expected. Do not silently continue.
