@@ -1,8 +1,8 @@
-# Agent Factory — Pipeline Spec
+# Agent Factory - Pipeline Spec
 
 A team of seven specialized agents that turns *nothing* into a production-ready
 software project. Each agent owns one job and hands off through files in a
-per-run folder. No agent guesses another's output — it reads it.
+per-run folder. No agent guesses another's output - it reads it.
 
 ## The pipeline
 
@@ -19,7 +19,7 @@ per-run folder. No agent guesses another's output — it reads it.
                         └──────────────┘                 │  (tech-lead: challenges
                                                          │   bad decisions, pins
                             ┌────────────────────────────┤   deps, scalability notes)
-                            ▼ (parallel — contract frozen) ▼
+                            ▼ (parallel - contract frozen) ▼
                     ┌──────────────────┐      ┌───────────────────┐
                     │ backend-engineer │      │ frontend-engineer │
                     │  output/api/     │      │  output/web/      │
@@ -58,11 +58,11 @@ per-run folder. No agent guesses another's output — it reads it.
 | `devops-engineer` | opus | CI/CD, Docker, monitoring, deploy | everything | `devops.md`, config files |
 
 `reviewer` only judges (read-only). `debugger` actually fixes.
-`devops-engineer` runs optionally — add `--devops` to `/forge` or invoke directly.
+`devops-engineer` runs optionally - add `--devops` to `/forge` or invoke directly.
 
 ## Key design principles (from the images)
 
-- **Scale mindset:** Every agent builds like it could serve millions — clean
+- **Scale mindset:** Every agent builds like it could serve millions - clean
   separation of concerns, no tight coupling, performance-aware from day one.
 - **Senior engineer mindset:** Architect challenges bad decisions before they're
   built. Reviewer checks architecture quality, not just bugs. Debugger traces
