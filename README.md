@@ -1,12 +1,24 @@
 # 🏭 Agent Factory
 
 A team of six specialized AI agents that turns *nothing* into a runnable
-software project — one agent finds a wow idea, one plans it, two build it
-(backend + frontend), one reviews it, and one runs it to fix the bugs and
-security flaws.
+software project: one agent finds a wow idea, one plans it, two build it
+(backend + frontend, in parallel), one reviews it, and one runs it to fix the
+bugs and security flaws it finds.
 
-Built as **Claude Code subagents** you can run today, designed to graduate into
-a standalone Python app later.
+Two ways to run it, same pipeline: as **Claude Code subagents** (`/forge`) or
+as a **standalone Python orchestrator** (`factory.py`) built on the Anthropic
+SDK.
+
+## Proof it works
+
+Three complete projects shipped end-to-end by the pipeline, idea to debugged
+code, with no human writing a line:
+
+| Project | What it is | Result |
+|---|---|---|
+| **PinPoint** | CLI dependency scanner | 65 tests, all passing; debugger fixed 5 bugs including a path-segment matching flaw |
+| **DriftGuard** | Schema drift detector (OpenAPI / TypeScript / Prisma) | 108 tests passing, 0 type errors, 0 lint errors; 15 bugs found and fixed; Docker + GitHub Actions CI generated |
+| **Receipts.dev** | Developer profile platform with grounded AI chat | 92 files; 16 bugs debugged (1 critical, 4 high); GitHub OAuth, pgvector retrieval |
 
 ## The team
 
@@ -16,10 +28,46 @@ a standalone Python app later.
 | 📐 **architect** | Turns the idea into a build plan with a frozen API contract |
 | ⚙️ **backend-engineer** | Builds the server side, exactly to the contract |
 | 🎨 **frontend-engineer** | Builds the UI, exactly to the contract, and makes it look good |
-| 🔍 **reviewer** | Judges the result — bugs, security, contract conformance (read-only) |
+| 🔍 **reviewer** | Judges the result: bugs, security, contract conformance (read-only by design) |
 | 🛠️ **debugger** | Actually runs it: fixes errors and patches security flaws |
+| 🚀 **devops-engineer** | Dockerfile, CI workflow, monitoring notes (Claude Code pipeline) |
 
-## How to run it
+**Why it doesn't fall apart:** agents never guess each other's output. They
+hand off through files in a `runs/<timestamp>/` folder, and the architect's
+**API contract is frozen before any code is written**. That contract is what
+keeps the backend and frontend compatible even though two separate agents
+build them in parallel without seeing each other's code. The reviewer can
+only read; the debugger is the only agent graded on fixing what it finds
+rather than writing more.
+
+See [`FACTORY.md`](./FACTORY.md) for the full pipeline diagram and the
+artifact contract.
+
+## Quickstart: Python orchestrator
+
+```bash
+git clone https://github.com/syzayd/agent-factory
+cd agent-factory
+pip install -r requirements.txt
+
+export ANTHROPIC_API_KEY=your-key-here   # PowerShell: $env:ANTHROPIC_API_KEY="your-key-here"
+
+python factory.py --theme "developer tools"
+```
+
+The theme is optional; leave it off and idea-hunter picks the space. The
+pipeline runs five stages (idea → architecture → backend + frontend in
+parallel → review → debug) and prints a per-stage live console via `rich`.
+Everything lands in `runs/<timestamp>/`: the idea, the frozen architecture
+contract, both engineers' notes, the review, the debug report, and the
+generated project itself.
+
+Models used: `claude-opus-4-8` for idea / architecture / review / debug,
+`claude-sonnet-4-6` for the two engineers. A full run costs roughly what a
+few million tokens cost on those models; the parallel build stage uses a
+`ThreadPoolExecutor` so wall-clock time stays reasonable.
+
+## Quickstart: Claude Code subagents
 
 1. Open Claude Code with **this folder** as the working directory (so the
    project's `.claude/agents` and `/forge` command are active).
@@ -27,40 +75,25 @@ a standalone Python app later.
    ```
    /forge "developer tools"
    ```
-   (The theme is optional — leave it off and idea-hunter picks the space.)
 3. Watch a new `runs/<timestamp>/` folder fill in, stage by stage. When it's
-   done you get a runnable project under `runs/<timestamp>/output/` plus a recap
-   of how to start it.
+   done you get a runnable project under `runs/<timestamp>/output/` plus a
+   recap of how to start it.
 
-You can also drive agents one at a time, e.g. `@idea-hunter give me an idea for
-a health app`, then `@architect plan it`.
+You can also drive agents one at a time, e.g. `@idea-hunter give me an idea
+for a health app`, then `@architect plan it`.
 
-## How it works
+## How the two phases relate
 
-Agents never guess each other's output — they hand off through files in the run
-folder. The `architect`'s **API contract** is the single source of truth that
-keeps the backend and frontend in sync even though they're built in parallel by
-separate agents. See [`FACTORY.md`](./FACTORY.md) for the full pipeline diagram
-and the artifact contract.
+Phase 1 (Claude Code subagents) and Phase 2 (`factory.py`) share the exact
+same `runs/<ts>/` artifact contract, so a project generated by the coded
+pipeline is byte-compatible with one generated by the subagents. The agent
+prompts live in [`agents/prompts.py`](./agents/prompts.py); the tool loop
+(file read/write, shell, search) is in [`agents/tools.py`](./agents/tools.py).
 
-## Roadmap — Phase 2 (the coded app)
+## License
 
-This is the "hybrid" plan: the subagents here are Phase 1. Phase 2 ports the
-exact same roles into a standalone Python program — the portfolio/GitHub piece:
-
-- **`factory.py`** = the orchestrator loop (what `/forge` does today, in code).
-- Each subagent's system prompt becomes an agent definition built on the
-  **Anthropic Python SDK** with tool use (`claude-opus-4-8` for idea / architect
-  / review / debug, `claude-sonnet-4-6` for the engineers, adaptive thinking).
-- The agents' tools become real Python functions (read/write run files, run
-  shell, web search).
-- The **same `runs/<ts>/` artifact contract** carries over unchanged — so a
-  project generated by the code is byte-compatible with one generated here.
-
-Because Phase 1 already communicates through that file contract, the port is
-mostly copy-paste of the prompts plus a driver loop — nothing here has to be
-redesigned.
+[MIT](./LICENSE)
 
 ---
 
-*Part of Zaid Ali Syed's build-in-public portfolio.*
+*Part of [Zaid Ali Syed](https://zaidalisyed.vercel.app)'s build-in-public portfolio.*
