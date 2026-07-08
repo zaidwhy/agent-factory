@@ -5,3 +5,4 @@ __pycache__/
 runs/*/
 !runs/.gitkeep
 .DS_Store
+graphify-out/
