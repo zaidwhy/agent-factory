@@ -41,3 +41,12 @@ Running log of meaningful changes to Agent Factory. Newest first.
   handing off through `runs/<timestamp>/` files with a frozen API contract.
 - Phase 2: `factory.py` standalone orchestrator on the Anthropic Python SDK.
   Same artifact contract; parallel backend/frontend builds via ThreadPoolExecutor.
+
+## 2026-07-10 - Sandbox path containment
+
+- `_resolve()` in `agents/tools.py` now resolves every tool-supplied path and rejects
+  anything outside the per-run project root (absolute paths and `../` traversal raise;
+  tool calls surface a readable "Error ... sandbox" string instead of touching the file).
+- First test suite in the repo: `tests/test_sandbox.py`, 8 cases, offline
+  (`python -m pytest tests/ -q`).
+- Source: MASTER-FIX-PLAN v2 finding S4 / Genesis Tier 1 item 7.

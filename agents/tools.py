@@ -90,13 +90,22 @@ def execute_tool(name: str, tool_input: dict, project_root: Path) -> str:
 
 
 def _resolve(path: str, project_root: Path) -> Path:
+    """Resolve a tool-supplied path and refuse anything outside the run sandbox.
+
+    Agents only ever need paths inside their own runs/<timestamp>/ dir; absolute
+    paths and ../ traversal are treated as errors, not requests.
+    """
     p = Path(path)
-    return p if p.is_absolute() else project_root / p
+    full = (p if p.is_absolute() else project_root / p).resolve()
+    root = project_root.resolve()
+    if full != root and root not in full.parents:
+        raise ValueError(f"path escapes the run sandbox: {path}")
+    return full
 
 
 def _read_file(path: str, project_root: Path) -> str:
-    full = _resolve(path, project_root)
     try:
+        full = _resolve(path, project_root)
         return full.read_text(encoding="utf-8")
     except FileNotFoundError:
         return f"Error: file not found: {path}"
@@ -105,14 +114,20 @@ def _read_file(path: str, project_root: Path) -> str:
 
 
 def _write_file(path: str, content: str, project_root: Path) -> str:
-    full = _resolve(path, project_root)
-    full.parent.mkdir(parents=True, exist_ok=True)
-    full.write_text(content, encoding="utf-8")
+    try:
+        full = _resolve(path, project_root)
+        full.parent.mkdir(parents=True, exist_ok=True)
+        full.write_text(content, encoding="utf-8")
+    except Exception as exc:
+        return f"Error writing {path}: {exc}"
     return f"Wrote {len(content)} chars to {path}"
 
 
 def _run_bash(command: str, cwd: str | None, project_root: Path) -> str:
-    work_dir = _resolve(cwd, project_root) if cwd else project_root
+    try:
+        work_dir = _resolve(cwd, project_root) if cwd else project_root
+    except ValueError as exc:
+        return f"Error: {exc}"
     try:
         result = subprocess.run(
             command,
