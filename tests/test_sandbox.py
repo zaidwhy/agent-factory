@@ -28,8 +28,12 @@ def test_dotdot_traversal_is_rejected(tmp_path):
 
 
 def test_absolute_paths_outside_the_root_are_rejected(tmp_path):
+    # A sibling of tmp_path is absolute and genuinely outside the sandbox on any OS -
+    # a hardcoded platform-specific path (e.g. "C:/Windows/...") is not absolute on
+    # POSIX and silently passes through as a relative path there instead of raising.
+    outside = tmp_path.parent / "outside-sandbox" / "hosts"
     with pytest.raises(ValueError):
-        _resolve("C:/Windows/system32/drivers/etc/hosts", tmp_path)
+        _resolve(str(outside), tmp_path)
 
 
 def test_read_file_escape_returns_error_string(tmp_path):
