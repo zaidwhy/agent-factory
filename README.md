@@ -1,5 +1,8 @@
 # 🏭 Agent Factory
 
+[![CI](https://github.com/syzayd/agent-factory/actions/workflows/ci.yml/badge.svg)](https://github.com/syzayd/agent-factory/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 A team of six specialized AI agents that turns *nothing* into a runnable
 software project: one agent finds a wow idea, one plans it, two build it
 (backend + frontend, in parallel), one reviews it, and one runs it to fix the
