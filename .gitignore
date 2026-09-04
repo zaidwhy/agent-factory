@@ -6,3 +6,5 @@ runs/*/
 !runs/.gitkeep
 .DS_Store
 graphify-out/
+
+CLAUDE.md

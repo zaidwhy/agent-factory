@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use this project, please cite it as below."
+title: "Agent Factory"
+authors:
+  - family-names: "Syed"
+    given-names: "Zaid Ali"
+date-released: 2026-06-26
+url: "https://github.com/zaidwhy/agent-factory"
+repository-code: "https://github.com/zaidwhy/agent-factory"
+license: MIT
+abstract: >
+  A 6-agent pipeline (idea-hunter, architect, backend-engineer,
+  frontend-engineer, reviewer, debugger) that turns nothing into a
+  tested, runnable project from a single command.
