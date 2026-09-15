@@ -1,6 +1,6 @@
 # 🏭 Agent Factory
 
-[![CI](https://github.com/syzayd/agent-factory/actions/workflows/ci.yml/badge.svg)](https://github.com/syzayd/agent-factory/actions/workflows/ci.yml)
+[![CI](https://github.com/zaidwhy/agent-factory/actions/workflows/ci.yml/badge.svg)](https://github.com/zaidwhy/agent-factory/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 A team of six specialized AI agents that turns *nothing* into a runnable
@@ -49,7 +49,7 @@ artifact contract.
 ## Quickstart: Python orchestrator
 
 ```bash
-git clone https://github.com/syzayd/agent-factory
+git clone https://github.com/zaidwhy/agent-factory
 cd agent-factory
 pip install -r requirements.txt
 
