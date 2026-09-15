@@ -1,3 +1,5 @@
+import shlex
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -123,15 +125,48 @@ def _write_file(path: str, content: str, project_root: Path) -> str:
     return f"Wrote {len(content)} chars to {path}"
 
 
+# Executables an agent may launch. The command string comes from a model, so it is parsed
+# into an argument list and run WITHOUT a shell: no pipes, no `&&`, no redirects, no
+# substitution. An agent that needs two commands makes two tool calls.
+ALLOWED_EXECUTABLES = frozenset({
+    "python", "python3", "py", "pip", "pytest", "uv", "ruff", "mypy",
+    "node", "npm", "npx", "pnpm", "yarn", "tsc", "vite",
+    "git", "ls", "dir", "cat", "type", "echo", "mkdir", "pwd", "tree", "find", "grep",
+})
+_SHELL_METACHARACTERS = set(";|&<>`$\n")
+
+
+def _parse_command(command: str) -> list[str]:
+    """Turn a model-written command line into an argv list, rejecting anything that
+    would only make sense to a shell. Raises ValueError with a message the agent can act on."""
+    if any(ch in _SHELL_METACHARACTERS for ch in command):
+        raise ValueError(
+            "shell operators (; | & < > ` $) are not allowed - run one plain command per call"
+        )
+    argv = shlex.split(command, posix=True)
+    if not argv:
+        raise ValueError("empty command")
+    exe = Path(argv[0]).name.lower()
+    exe = exe[:-4] if exe.endswith(".exe") or exe.endswith(".cmd") else exe
+    if exe not in ALLOWED_EXECUTABLES:
+        raise ValueError(f"executable '{argv[0]}' is not in the allow-list {sorted(ALLOWED_EXECUTABLES)}")
+    resolved = shutil.which(argv[0])
+    if resolved is None:
+        raise ValueError(f"executable '{argv[0]}' not found on PATH")
+    argv[0] = resolved
+    return argv
+
+
 def _run_bash(command: str, cwd: str | None, project_root: Path) -> str:
     try:
         work_dir = _resolve(cwd, project_root) if cwd else project_root
+        argv = _parse_command(command)
     except ValueError as exc:
         return f"Error: {exc}"
     try:
         result = subprocess.run(
-            command,
-            shell=True,
+            argv,
+            shell=False,
             cwd=work_dir,
             capture_output=True,
             text=True,
