@@ -99,4 +99,4 @@ prompts live in [`agents/prompts.py`](./agents/prompts.py); the tool loop
 
 ---
 
-*Part of [Zaid Ali Syed](https://zaidalisyed.vercel.app)'s build-in-public portfolio.*
+*Part of [Zaid Ali Syed](https://zaidverse.vercel.app)'s build-in-public portfolio.*
