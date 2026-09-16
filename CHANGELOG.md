@@ -2,6 +2,21 @@
 
 Running log of meaningful changes to Agent Factory. Newest first.
 
+## 2026-09-16 - Golden-run test
+
+- `tests/test_golden_run.py`: drives the real `factory.py` orchestration (stage
+  order, the parallel backend/frontend `ThreadPoolExecutor` stage, the tool-call
+  loop in `agents/base.py`) with the Anthropic client mocked entirely - no key,
+  no cost, no network. Asserts the full `FACTORY.md` artifact contract, and
+  specifically that reviewer/debugger/backend/frontend only ever get a
+  successful `read_file` result for their upstream file, which fails loudly if
+  the handoff order ever breaks rather than passing on file-existence alone.
+  Sanity-checked by deliberately breaking the architect stage and confirming
+  the test actually fails.
+- `CLAUDE.md`'s "no test suite" line was stale (`tests/test_sandbox.py` and
+  `tests/test_run_bash_safety.py` already existed); corrected.
+- Source: `zaid-os/roadmap/EXECUTION-MASTER-PLAN.md` M6.
+
 ## 2026-07-02 - Open-source release polish
 
 - **MIT LICENSE added** (repo previously had no license at all).
