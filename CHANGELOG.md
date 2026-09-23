@@ -65,3 +65,8 @@ Running log of meaningful changes to Agent Factory. Newest first.
 - First test suite in the repo: `tests/test_sandbox.py`, 8 cases, offline
   (`python -m pytest tests/ -q`).
 - Source: MASTER-FIX-PLAN v2 finding S4 / Genesis Tier 1 item 7.
+
+## 2026-09-24 - Refinement pass (refine-repo)
+
+- Em dash purge: 110 occurrences replaced with " - " across 6 files in docs/evidence (recorded agent-run output, punctuation only).
+- Verified after: pytest tests 20 passed before and after.
