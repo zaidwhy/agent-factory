@@ -2,6 +2,17 @@
 
 Running log of meaningful changes to Agent Factory. Newest first.
 
+## 2026-09-28 - Evidence collection script
+
+- `scripts/collect_evidence.py`: copies each run's markdown (root handoff files and
+  every README under `output/`) into `docs/evidence/` as `<run>__<path>`; `--check`
+  exits 1 when a run has no evidence. Add-only: the committed files were curated
+  after collection (em dash purge, `syzayd` -> `zaidwhy` URLs), and the script's
+  transform reproduces all 25 of them apart from those URLs, so it never overwrites.
+- Removed `docs/evidence/2026-06-25_1737__output__.pytest_cache__README.md`: pytest's
+  own cache README, copied by hand, not run evidence. Dot directories are now skipped.
+- `tests/test_collect_evidence.py` (3 tests; suite 23 passed). Closes zaid-os tech debt #10.
+
 ## 2026-09-16 - Golden-run test
 
 - `tests/test_golden_run.py`: drives the real `factory.py` orchestration (stage
