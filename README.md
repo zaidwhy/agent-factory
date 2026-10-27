@@ -1,4 +1,7 @@
-<img src=".github/plate.svg" alt="Agent Factory: The contract freezes before the code does, so two agents can build in parallel. 6 specialised agents; frozen API contracts; 3 projects shipped in test runs. Core strip: 45 commits over 16 weeks, Jun 2026 to Oct 2026." width="100%">
+<picture>
+<source media="(max-width: 600px)" srcset=".github/plate-narrow.svg">
+<img src=".github/plate.svg" alt="Agent Factory: The contract freezes before the code does, so two agents can build in parallel. 6 specialised agents; frozen API contracts; 3 projects shipped in test runs. Core strip: 47 commits over 19 weeks, Jun 2026 to Oct 2026." width="100%">
+</picture>
 
 # 🏭 Agent Factory
 
