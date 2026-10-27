@@ -1,3 +1,5 @@
+<img src=".github/plate.svg" alt="Agent Factory: The contract freezes before the code does, so two agents can build in parallel. 6 specialised agents; frozen API contracts; 3 projects shipped in test runs. Core strip: 45 commits over 16 weeks, Jun 2026 to Oct 2026." width="100%">
+
 # 🏭 Agent Factory
 
 [![CI](https://github.com/zaidwhy/agent-factory/actions/workflows/ci.yml/badge.svg)](https://github.com/zaidwhy/agent-factory/actions/workflows/ci.yml)
@@ -100,3 +102,7 @@ prompts live in [`agents/prompts.py`](./agents/prompts.py); the tool loop
 ---
 
 *Part of [Zaid Ali Syed](https://www.solstine.dev)'s build-in-public portfolio.*
+
+---
+
+<sub>One plate from the survey at [github.com/zaidwhy](https://github.com/zaidwhy). The strip on the plate above is this repository's own commit history, one band per week.</sub>
