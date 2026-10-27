@@ -2,6 +2,16 @@
 
 Running log of meaningful changes to Agent Factory. Newest first.
 
+## 2026-10-28 - Refuse a non-empty run folder
+
+- `factory.py` exits 2 before creating the Anthropic client when the run folder already
+  exists and holds files. Before, `--run-dir runs/2026-06-25_1737` (a proof run) or two
+  default runs started in the same minute (same `YYYY-MM-DD_HHMM` stamp) let six agents
+  write over an earlier run's artifacts. An empty existing folder is still accepted.
+- 2 tests in `tests/test_golden_run.py` (written first; the refusal test failed before the
+  fix); 90 passed. Live: `python factory.py --run-dir runs/2026-06-25_1737` printed the error,
+  exited 2, and `git status runs` stayed clean.
+
 ## 2026-09-28 - Evidence collection script
 
 - `scripts/collect_evidence.py`: copies each run's markdown (root handoff files and

@@ -74,6 +74,11 @@ def main() -> None:
     args = parser.parse_args()
 
     run_dir = _make_run_dir(args.run_dir)
+    # runs/ holds the proof runs, and two default runs in the same minute share a stamp:
+    # either way six agents would write over an earlier run's artifacts.
+    if run_dir.is_dir() and any(run_dir.iterdir()):
+        parser.exit(2, f"error: run folder {run_dir} already exists and is not empty; "
+                       "pass a new --run-dir or wait a minute for a fresh timestamp\n")
     run_dir.mkdir(parents=True, exist_ok=True)
     client = anthropic.Anthropic()
 

@@ -15,6 +15,8 @@ import sys
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import factory
@@ -193,3 +195,28 @@ def test_golden_run_produces_the_full_artifact_contract(monkeypatch, tmp_path):
     # the handoff contract expects.
     for system, remaining in scripts.items():
         assert remaining == [], f"agent with system prompt {system[:40]!r} left {len(remaining)} scripted turn(s) unconsumed"
+
+
+def test_existing_run_folder_is_refused_before_any_agent_runs(monkeypatch, tmp_path, capsys):
+    # runs/ holds the proof runs; reusing one as --run-dir would let six agents write over it.
+    proof = tmp_path / "runs" / "2026-06-25_1737"
+    proof.mkdir(parents=True)
+    (proof / "idea.md").write_text("the original idea", encoding="utf-8")
+
+    def no_client():
+        raise AssertionError("no client may be created for a refused run")
+
+    monkeypatch.setattr(factory, "PROJECT_ROOT", tmp_path)
+    monkeypatch.setattr(factory.anthropic, "Anthropic", no_client)
+    monkeypatch.setattr(sys, "argv", ["factory.py", "--run-dir", "runs/2026-06-25_1737"])
+    with pytest.raises(SystemExit) as exc:
+        factory.main()
+    assert exc.value.code == 2
+    assert "already exists and is not empty" in capsys.readouterr().err
+    assert (proof / "idea.md").read_text(encoding="utf-8") == "the original idea"
+
+
+def test_an_empty_existing_run_folder_is_fine(monkeypatch, tmp_path):
+    (tmp_path / "runs" / "fresh").mkdir(parents=True)
+    monkeypatch.setattr(factory, "PROJECT_ROOT", tmp_path)
+    assert factory._make_run_dir("runs/fresh") == tmp_path / "runs" / "fresh"
