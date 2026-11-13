@@ -1,111 +1,111 @@
-<picture>
-<source media="(max-width: 600px)" srcset=".github/plate-narrow.svg">
-<img src=".github/plate.svg" alt="Agent Factory: The contract freezes before the code does, so two agents can build in parallel. 6 specialised agents; frozen API contracts; 3 projects shipped in test runs. Core strip: 47 commits over 19 weeks, Jun 2026 to Oct 2026." width="100%">
-</picture>
+# Agent Factory
 
-# 🏭 Agent Factory
+Parallel code-writing agents drift apart unless something fixes the interface between them
+before either starts. Agent Factory makes the architect's API contract the first thing that is
+written and the one thing nobody may change: the backend and frontend agents then build at the
+same time without seeing each other's code, and the contract is what has to line up when a
+reviewer checks the result.
 
-[![CI](https://github.com/zaidwhy/agent-factory/actions/workflows/ci.yml/badge.svg)](https://github.com/zaidwhy/agent-factory/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+It is for anyone who wants to see a multi-agent build pipeline whose handoffs are plain files
+you can read, not messages inside a framework. Six agents (seven in the Claude Code version)
+take a theme to a runnable project: idea, plan, backend and frontend in parallel, review, debug.
 
-A team of six specialized AI agents that turns *nothing* into a runnable
-software project: one agent finds a wow idea, one plans it, two build it
-(backend + frontend, in parallel), one reviews it, and one runs it to fix the
-bugs and security flaws it finds.
-
-Two ways to run it, same pipeline: as **Claude Code subagents** (`/forge`) or
-as a **standalone Python orchestrator** (`factory.py`) built on the Anthropic
-SDK.
-
-## Proof it works
-
-Three complete projects shipped end-to-end by the pipeline, idea to debugged
-code, with no human writing a line:
-
-| Project | What it is | Result |
-|---|---|---|
-| **PinPoint** | CLI dependency scanner | 65 tests, all passing; debugger fixed 5 bugs including a path-segment matching flaw |
-| **DriftGuard** | Schema drift detector (OpenAPI / TypeScript / Prisma) | 108 tests passing, 0 type errors, 0 lint errors; 15 bugs found and fixed; Docker + GitHub Actions CI generated |
-| **Receipts.dev** | Developer profile platform with grounded AI chat | 92 files; 16 bugs debugged (1 critical, 4 high); GitHub OAuth, pgvector retrieval |
-
-## The team
-
-| Agent | Job |
-|---|---|
-| 💡 **idea-hunter** | Finds one genuinely novel, buildable project idea with a clear "wow" hook |
-| 📐 **architect** | Turns the idea into a build plan with a frozen API contract |
-| ⚙️ **backend-engineer** | Builds the server side, exactly to the contract |
-| 🎨 **frontend-engineer** | Builds the UI, exactly to the contract, and makes it look good |
-| 🔍 **reviewer** | Judges the result: bugs, security, contract conformance (read-only by design) |
-| 🛠️ **debugger** | Actually runs it: fixes errors and patches security flaws |
-| 🚀 **devops-engineer** | Dockerfile, CI workflow, monitoring notes (Claude Code pipeline) |
-
-**Why it doesn't fall apart:** agents never guess each other's output. They
-hand off through files in a `runs/<timestamp>/` folder, and the architect's
-**API contract is frozen before any code is written**. That contract is what
-keeps the backend and frontend compatible even though two separate agents
-build them in parallel without seeing each other's code. The reviewer can
-only read; the debugger is the only agent graded on fixing what it finds
-rather than writing more.
-
-See [`FACTORY.md`](./FACTORY.md) for the full pipeline diagram and the
-artifact contract.
-
-## Quickstart: Python orchestrator
-
-```bash
-git clone https://github.com/zaidwhy/agent-factory
-cd agent-factory
+```
 pip install -r requirements.txt
-
-export ANTHROPIC_API_KEY=your-key-here   # PowerShell: $env:ANTHROPIC_API_KEY="your-key-here"
-
-python factory.py --theme "developer tools"
+export ANTHROPIC_API_KEY=...        # PowerShell: $env:ANTHROPIC_API_KEY = "..."
+python factory.py --theme "developer tools"      # --theme is optional
 ```
 
-The theme is optional; leave it off and idea-hunter picks the space. The
-pipeline runs five stages (idea → architecture → backend + frontend in
-parallel → review → debug) and prints a per-stage live console via `rich`.
-Everything lands in `runs/<timestamp>/`: the idea, the frozen architecture
-contract, both engineers' notes, the review, the debug report, and the
-generated project itself.
+A full run costs several million tokens and takes a long time; cost and duration were not
+measured for this README. Everything lands in `runs/<YYYY-MM-DD_HHMM>/`.
 
-Models used: `claude-opus-4-8` for idea / architecture / review / debug,
-`claude-sonnet-4-6` for the two engineers. A full run costs roughly what a
-few million tokens cost on those models; the parallel build stage uses a
-`ThreadPoolExecutor` so wall-clock time stays reasonable.
+## How the handoffs work
 
-## Quickstart: Claude Code subagents
+| Stage | Agent (model) | Reads | Writes |
+|---|---|---|---|
+| 1 | idea-hunter (opus) | the theme | `idea.md` |
+| 2 | architect (opus) | `idea.md` | `architecture.md`, with the frozen API contract |
+| 3 | backend-engineer and frontend-engineer (sonnet), in parallel | `architecture.md` | `output/`, `backend-notes.md`, `frontend-notes.md` |
+| 4 | reviewer (opus) | plan and code | `review.md` |
+| 5 | debugger (opus) | everything | `debug-report.md`, fixes in `output/` |
+| optional | devops-engineer (Claude Code version only) | everything | `devops.md`, Dockerfile, CI workflow |
 
-1. Open Claude Code with **this folder** as the working directory (so the
-   project's `.claude/agents` and `/forge` command are active).
-2. Run the orchestrator:
-   ```
-   /forge "developer tools"
-   ```
-3. Watch a new `runs/<timestamp>/` folder fill in, stage by stage. When it's
-   done you get a runnable project under `runs/<timestamp>/output/` plus a
-   recap of how to start it.
+Agents never share memory; each stage starts from the files the earlier stages left. The Python
+orchestrator uses `claude-opus-4-8` and `claude-sonnet-4-6` and runs stage 3 on a
+`ThreadPoolExecutor` with two workers. The file layout is the artifact contract in
+[`FACTORY.md`](./FACTORY.md), shared by both ways of running it, so a run from `factory.py` and
+a run from the subagents have the same shape.
 
-You can also drive agents one at a time, e.g. `@idea-hunter give me an idea
-for a health app`, then `@architect plan it`.
+## Run it as Claude Code subagents
 
-## How the two phases relate
+Open Claude Code with this folder as the working directory, so `.claude/agents` and the
+`/forge` command are active, then:
 
-Phase 1 (Claude Code subagents) and Phase 2 (`factory.py`) share the exact
-same `runs/<ts>/` artifact contract, so a project generated by the coded
-pipeline is byte-compatible with one generated by the subagents. The agent
-prompts live in [`agents/prompts.py`](./agents/prompts.py); the tool loop
-(file read/write, shell, search) is in [`agents/tools.py`](./agents/tools.py).
+```
+/forge "developer tools"              # stages 1 to 5
+/forge "developer tools" --devops     # adds the devops stage
+```
 
-## License
+Single agents can be driven directly, for example `@idea-hunter` or `@architect`.
 
-[MIT](./LICENSE)
+## What was produced
 
----
+Three runs, 25 to 30 June 2026. The full run folders are not in the repository (`runs/` is
+gitignored); the markdown each run wrote is kept under [`docs/evidence/`](./docs/evidence/),
+and the figures below are quoted from those debug reports.
 
-*Part of [Zaid Ali Syed](https://www.solstine.dev)'s build-in-public portfolio.*
+| Run | Project | Debugger's report |
+|---|---|---|
+| 2026-06-25 | PinPoint, a CLI dependency scanner | 65 tests collected, 65 passed; 5 bugs fixed, including a path-segment matching flaw |
+| 2026-06-28 | DriftGuard, a schema drift detector for OpenAPI, TypeScript and Prisma | 108 tests passed, 0 type errors, 0 lint errors; devops stage added a Dockerfile and CI |
+| 2026-06-30 | Receipts.dev, a developer profile platform with grounded AI chat | all 16 reviewer findings addressed, including 1 critical and 4 high; GitHub OAuth and pgvector retrieval |
 
----
+These are the debugger's own statements about its run; the test counts come from the agent
+that fixed the code. Nothing outside the three runs measures how often the pipeline produces a
+project that works.
 
-<sub>One plate from the survey at [github.com/zaidwhy](https://github.com/zaidwhy). The strip on the plate above is this repository's own commit history, one band per week.</sub>
+## Architecture
+
+- `factory.py` - the CLI and the five stages in order.
+- `agents/prompts.py` - one system prompt per agent.
+- `agents/base.py` - the model loop: stream a reply, run the tool calls, repeat until the
+  model ends its turn.
+- `agents/tools.py` - the four tools: `read_file`, `write_file`, `run_bash`, `web_search`.
+  Paths outside the repository are refused. `run_bash` takes one command with no shell
+  operators, from an allow-list of executables (python, pytest, ruff, node, npm, git and a few
+  more), with a 120 s timeout.
+- `.claude/agents/*.md` and `.claude/commands/forge.md` - the same pipeline as subagents.
+- `scripts/collect_evidence.py` - copies a run's markdown into `docs/evidence/`.
+
+`factory.py` refuses a run folder that already holds files, so a reused `--run-dir` or two runs
+in the same minute cannot overwrite an earlier run.
+
+## Tests
+
+`python -m pytest tests -q` - 25 passed on 2026-11-13 (Windows 11, Python 3.14). One of them
+drives the real `factory.py` with the Anthropic client mocked, so it needs no key and costs
+nothing; it asserts every artifact in the contract is written and that each stage's tool calls
+succeed only because the stage before it ran. The others cover the `run_bash` and path
+sandbox and the evidence script. CI runs the same command on Python 3.12
+([workflow](./.github/workflows/ci.yml)). Plain `pytest` from the repository root also
+collects PinPoint's own tests inside the local `runs/` folder and reports 90, which is not the
+suite's count.
+
+## Limits
+
+- The reviewer is read-only by instruction, not by enforcement. Its prompt says not to modify
+  files, but it holds `Write` and `Bash` in the subagent version, and every agent gets every
+  tool in the Python version.
+- Three runs, one author, no comparison against a single agent building the same project. The
+  pipeline's value over that baseline is unmeasured.
+- The frozen contract stops interface drift, not wrong behaviour behind the interface. The
+  debugger's reports list real bugs in all three runs, so the build stages did not ship clean.
+- The three proof runs are not reproducible from the repository alone, since `runs/` is not
+  committed and a run depends on live model output.
+
+## Status
+
+Maintained, no active development. Last behaviour change was refusing a non-empty run folder
+(2026-10-28, see [`CHANGELOG.md`](./CHANGELOG.md)).
+
+MIT licensed ([LICENSE](./LICENSE)). Part of [Zaid Ali Syed](https://www.solstine.dev)'s portfolio.

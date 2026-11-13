@@ -57,7 +57,7 @@ per-run folder. No agent guesses another's output - it reads it.
 | `debugger` | opus | run it, fix bugs + perf + security | everything | `debug-report.md` |
 | `devops-engineer` | opus | CI/CD, Docker, monitoring, deploy | everything | `devops.md`, config files |
 
-`reviewer` only judges (read-only). `debugger` actually fixes.
+`reviewer` only judges: its prompt says not to modify files (an instruction; it still holds Write and Bash). `debugger` actually fixes.
 `devops-engineer` runs optionally - add `--devops` to `/forge` or invoke directly.
 
 ## Key design principles (from the images)
